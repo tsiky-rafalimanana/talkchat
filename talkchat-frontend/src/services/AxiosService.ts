@@ -1,0 +1,81 @@
+import axios from 'axios';
+
+
+export class AxiosService {
+  private apiURL = process.env.REACT_APP_API_URL;
+  private getToken() {
+    return localStorage.getItem('token') ?? '';
+  }
+
+  private axios = () => {
+    const token = this.getToken();
+    let headers = {};
+    if (token) {
+      headers = {
+        Authorization: 'Bearer ' + token,
+      };
+    }
+    const axioshttp = axios.create({
+      baseURL: process.env.API_URL,
+      headers
+    });
+
+    // Add a request interceptor
+    axioshttp.interceptors.request.use(
+      (config) => {
+        // Do something before request is sent
+        return config;
+      },
+      (error) => {
+        // Do something with request error
+        return Promise.reject(error);
+      },
+    );
+
+    return axioshttp;
+  };
+
+  get = async (params: any) => {
+    try {
+      return await this.axios().get(this.apiURL + params.url, params.data);
+    } catch (error) {
+      return null;
+    }
+  };
+
+  post = async (params: any) => {
+    try {
+      return await this.axios().post(this.apiURL + params.url, params.data);
+    } catch (error) {
+      return error;
+    }
+  };
+
+  postFile = async (params: any) => {
+    try {
+      return await this.axios().post(this.apiURL + params.url, params.data, {
+        responseType: 'blob',
+      });
+    } catch (error) {
+      return error;
+    }
+  };
+
+  put = async (params: any) => {
+    try {
+      return await this.axios().put(this.apiURL + params.url, params.data);
+    } catch (e) {
+      return null;
+    }
+  };
+
+  delete = async (params: any) => {
+    try {
+      return await this.axios().delete(this.apiURL + params.url, params.data);
+    } catch (e) {
+      return null;
+    }
+  };
+}
+
+export default new AxiosService();

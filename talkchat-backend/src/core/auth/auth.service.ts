@@ -11,15 +11,11 @@ export class AuthService {
   constructor() {}
 
   async signin(user: SigninDTO) {
-    try {
-      // hashing pwd before inserting t db
-      const password = await hashPassword(user.password);
-      const newUser = await User.save(User.create({ ...user, password }));
-      delete newUser.password;
-      return newUser;
-    } catch (error) {
-      return error;
-    }
+    // hashing pwd before inserting t db
+    const password = await hashPassword(user.password);
+    const newUser = await User.save(User.create({ ...user, password }));
+    delete newUser.password;
+    return newUser;
   }
 
   async login(data: LoginDTO) {
@@ -29,14 +25,13 @@ export class AuthService {
       where: {
         email: email,
       },
-    }).catch(error => {throw new Error(MESSAGE.ACCOUNT_NOT_EXIST)});
+    }).catch((error) => {
+      throw new Error(MESSAGE.ACCOUNT_NOT_EXIST);
+    });
     // if user exists verify password and generate a token else send error msg
     if (user) {
       const isPasswordCorrect = await verifyPassword(password, user.password);
-      console.log(
-        '🚀 ~ file: auth.service.ts ~ line 37 ~ AuthService ~ login ~ isPasswordCorrect',
-        isPasswordCorrect,
-      );
+
       if (isPasswordCorrect) {
         const token = this.getAccessToken(user);
         return {
@@ -44,7 +39,6 @@ export class AuthService {
           token: token,
         };
       } else {
-        console.log('here');
         throw new Error(MESSAGE.INVALID_PASSWORD);
       }
     } else {
