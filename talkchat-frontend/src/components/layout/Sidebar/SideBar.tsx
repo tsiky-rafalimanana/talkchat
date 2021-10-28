@@ -32,7 +32,6 @@ const Sidebar = (props: any) => {
   let history = useHistory();
   const [state, dispatch] = useContext<any>(Context);
   const { channelId } = useParams() as any;
-  console.log("🚀 ~ file: SideBar.tsx ~ line 32 ~ Sidebar ~ channelId", channelId)
   
   const [channels, setChannels] = useState<any>([]);
   const [users, setUsers] = useState<any>([]);
@@ -128,7 +127,7 @@ const Sidebar = (props: any) => {
           <Collapse in={openUsers} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               {users.map((u: any, index: number) => (
-                <ListItemButton sx={{ pl: 4 }} key={u.id} selected={state.currentChannelId === u.channelId} onClick={() => handleClickUser(index)}>
+                <ListItemButton sx={{ pl: 4 }} key={u.id} selected={state.currentChannelId ? state.currentChannelId === u.channelId : false} onClick={() => handleClickUser(index)}>
                   <ListItemText primary={`${u.lastname} ${u.firstname}`} />
                 </ListItemButton>
               ))}

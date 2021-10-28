@@ -11,7 +11,7 @@ interface MessageProps {
 
 const Message = ({ message, timestamp, user, avatar } : MessageProps) => {
   return (
-    <div className="message">
+    <div className={"message"}>
       <img src={tempAvatar} alt="" />
       <div className="message-info">
         <h4>

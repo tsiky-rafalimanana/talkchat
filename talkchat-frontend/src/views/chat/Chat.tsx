@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import "./Chat.css";
 import { useParams } from "react-router-dom";
 import StarBorderOutlineIcon from "@mui/icons-material/StarBorderOutlined";
@@ -8,36 +8,51 @@ import ChatInput from "../../components/chat-input/ChatInput";
 import { StoreActions } from "../../store/reducer";
 import { Context } from "../../store/store";
 import { ChannelService } from "../../services/ChannelService";
+import { MessageService } from "../../services/MessageService";
+import SocketIOService from "../../services/SocketIOService";
 
 function Chat() {
   const { channelId } = useParams() as any;
   const [channelDetails, setChannelDetails] = useState<any>(null);
   const [channelMessages, setChannelMessages] = useState<any[]>([]);
   const [state, dispatch] = useContext<any>(Context);
-
+  const messagesEndRef = useRef(null)
+  
+  useEffect(() => {
+    SocketIOService.listenNewMsg((data: any) => {
+      if (data.channelId === channelId) {
+        getChannel(channelId);
+      }
+    })
+  }, [])
+  
   useEffect(() => {
     dispatch({type: StoreActions.SET_CURRENT_CHANNEL_ID, payload: channelId})
-    // if (roomId) {
-    //   db.collection("rooms")
-    //     .doc(roomId)
-    //     .onSnapshot((snapshot) => setRoomDetails(snapshot.data()));
-    // }
-
-    // db.collection("rooms")
-    //   .doc(roomId)
-    //   .collection("messages")
-    //   .orderBy("timestamp", "asc")
-    //   .onSnapshot((snapshot) =>
-    //     setRoomMessages(snapshot.docs.map((doc) => doc.data()))
-    //   );
     getChannel(channelId);
+    
   }, [channelId]);
+
   const getChannel = async (idChannel: string) => {
     const channelDetails = await ChannelService.getChannel(idChannel);
     setChannelDetails(channelDetails.data.data);
   }
-  console.log(channelDetails);
-  console.log("MESSAGES", channelMessages);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [channelDetails])
+  
+  const handleNewMsg = async (textMsg: string) => {
+    const dataMsg = {
+      text: textMsg,
+      channel: state.currentChannelId
+    }
+    const newMsg = await MessageService.addNewMessage(dataMsg);
+    SocketIOService.emitNewMessage({channelId: state.currentChannelId});
+  }
+
+  const scrollToBottom = () => {
+    messagesEndRef.current && ((messagesEndRef.current) as any).scrollIntoView({ behavior: "smooth" });
+  }
 
   return channelDetails && (
     
@@ -65,10 +80,10 @@ function Chat() {
             key={id}
           />
         ))}
-        
+        <div ref={messagesEndRef} />
       </div>
       {/* <ChatInput channelName={roomDetails?.name} channelId={roomId} /> */}
-      <ChatInput channelName={'Chanel 20'} channelId={'errr'} />
+      <ChatInput onNewMessage={handleNewMsg} channelName={''} />
     </div>
   );
 }

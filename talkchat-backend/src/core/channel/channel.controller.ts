@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../../security/auth.guard';
 import { CurrentUser } from '../../security/currentUser.decorator';
 import { ChannelService } from './channel.service';
-import { ChannelAddDTO } from './dto/ChannelAddDto';
+import { ChannelAddDTO } from './dto/channel-add.dto';
 
 @Controller('channel')
 @UseGuards(AuthGuard)

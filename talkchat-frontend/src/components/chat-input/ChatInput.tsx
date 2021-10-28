@@ -2,12 +2,8 @@ import React from "react";
 import { useState } from "react";
 import "./ChatInput.css";
 
-interface ChatInputProps {
-  channelName: string;
-  channelId: string;
-}
 
-const ChatInput = ({ channelName, channelId }: ChatInputProps) => {
+const ChatInput = ({ channelName, onNewMessage }: any) => {
   const [input, setInput] = useState("");
   // const [{ user }] = useStateValue();
 
@@ -16,15 +12,7 @@ const ChatInput = ({ channelName, channelId }: ChatInputProps) => {
 
     if (!input) return false;
 
-    // if (channelId) {
-    //   db.collection("rooms").doc(channelId).collection("messages").add({
-    //     message: input,
-    //     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    //     user: user.displayName,
-    //     userImage: user.photoURL,
-    //   });
-    // }
-
+    onNewMessage(input);
     setInput("");
   };
 

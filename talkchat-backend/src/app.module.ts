@@ -8,6 +8,7 @@ import { AuthModule } from './core/auth/auth.module';
 import { MessageModule } from './core/message/message.module';
 import { UserModule } from './core/user/user.module';
 import { ChannelModule } from './core/channel/channel.module';
+import { ChatGateway } from './gateway/chat.gateway';
 
 @Module({
   imports: [
@@ -21,6 +22,6 @@ import { ChannelModule } from './core/channel/channel.module';
     ChannelModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ChatGateway],
 })
 export class AppModule {}

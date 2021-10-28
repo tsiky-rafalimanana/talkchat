@@ -18,7 +18,7 @@ export class Message extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, (user) => user.messages)
+  @ManyToOne(() => User, (user) => user.messages, {eager: true})
   owner: string;
 
   @Column({ type: 'text' })

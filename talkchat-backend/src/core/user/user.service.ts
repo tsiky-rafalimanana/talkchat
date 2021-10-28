@@ -16,7 +16,6 @@ export class UserService {
     });
     for (const item of users) {
       const channels = await this.getUsersDMChannel(item.id, currentUser.id);
-      console.log("🚀 ~ file: user.service.ts ~ line 19 ~ UserService ~ getAllUsers ~ channels", channels)
       item.channelId = channels[0] ? channels[0].id : null;
       delete item.password;
     }
@@ -31,13 +30,6 @@ export class UserService {
       userIds: [userId, currentUserId],
     })
     .getMany();
-    // console.log("🚀 ~ file: user.service.ts ~ line 41 ~ UserService ~ getUsersDMChannel", channels.filter(
-    //   (i) =>
-    //     i.members.length === 2 &&
-    //     i.members.find((m) => m.id === currentUserId) &&
-    //     i.members.find((m) => m.id === userId),
-    // ));
-    // channel with 2 members
     const result = channels.filter(
       (i) =>
         i.members.length === 2 &&
