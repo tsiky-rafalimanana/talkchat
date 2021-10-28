@@ -1,40 +1,86 @@
-import React, { useState, useEffect } from "react";
-import "./SideBar.css";
-import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import CreateIcon from "@mui/icons-material/Create";
-import SidebarOption from "../SideBarOption/SideBarOption";
-import InsertCommentIcon from "@mui/icons-material/InsertComment";
-import InboxIcon from "@mui/icons-material/Inbox";
-import DraftsIcon from "@mui/icons-material/Drafts";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import FileCopyIcon from "@mui/icons-material/FileCopy";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import AppsIcon from "@mui/icons-material/Apps";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import AddIcon from "@mui/icons-material/Add";
-import { ExpandLess, ExpandMore, StarBorder } from "@mui/icons-material";
-import { List, ListSubheader, ListItemButton, ListItemIcon, ListItemText, Collapse } from "@mui/material";
+import React, { useState, useEffect, useContext } from 'react';
+import './SideBar.css';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import CreateIcon from '@mui/icons-material/Create';
+import SidebarOption from '../SideBarOption/SideBarOption';
+import InsertCommentIcon from '@mui/icons-material/InsertComment';
+import InboxIcon from '@mui/icons-material/Inbox';
+import DraftsIcon from '@mui/icons-material/Drafts';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import AppsIcon from '@mui/icons-material/Apps';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import AddIcon from '@mui/icons-material/Add';
+import { ExpandLess, ExpandMore, StarBorder } from '@mui/icons-material';
+import {
+  List,
+  ListSubheader,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+} from '@mui/material';
+import { getUserInfo } from '../../../utils/LocalStorageUtils';
+import { useHistory, useParams } from 'react-router-dom';
+import { ChannelService } from '../../../services/ChannelService';
+import { Context } from '../../../store/store';
+import { StoreActions } from '../../../store/reducer';
 
-const Sidebar = () => {
-  const [channels, setChannels] = useState<any[]>([]);
-  const [open, setOpen] = useState(true);
-
-  const handleClick = () => {
-    setOpen(!open);
-  };
-  // const [{ user }] = useStateValue();
-
+const Sidebar = (props: any) => {
+  let history = useHistory();
+  const [state, dispatch] = useContext<any>(Context);
+  const { channelId } = useParams() as any;
+  console.log("🚀 ~ file: SideBar.tsx ~ line 32 ~ Sidebar ~ channelId", channelId)
+  
+  const [channels, setChannels] = useState<any>([]);
+  const [users, setUsers] = useState<any>([]);
+  const [openUsers, setOpenUsers] = useState(true);
+  const userInfo = getUserInfo();
+  
   useEffect(() => {
-    // db.collection("rooms").onSnapshot((snapshot) => {
-    //   setChannels(
-    //     snapshot.docs.map((doc) => ({
-    //       id: doc.id,
-    //       name: doc.data().name,
-    //     }))
-    //   );
+    
+    setUsers(props.allUsers);
+  }, [props.allUsers]);
+
+  const handleClickOpenUsers = () => {
+    setOpenUsers(!openUsers);
+  };
+
+  const handleClickUser = async (indexUser: number) => {
+    const currentUsers = [...users];
+    // handle active user
+    // currentUsers.forEach((item: any, index: number) => {
+    //   if (index !== indexUser) {
+    //     currentUsers[index].selected = false;
+    //   } else {
+    //     currentUsers[index].selected = true;
+    //   }
     // });
-  }, []);
+    // setUsers(currentUsers);
+    const otherUser = currentUsers[indexUser];
+    if (currentUsers[indexUser].channelId) {
+      history.push(`/channel/${currentUsers[indexUser].channelId}`);
+      dispatch({type: StoreActions.SET_CURRENT_CHANNEL_ID, payload: channelId})
+    } else {
+      // create data to send
+      const participants = [];
+      participants.push({id: userInfo.id});
+      participants.push({id: otherUser.id});
+      const newChannel = {
+        name: `${userInfo.username} - ${otherUser.lastname} ${otherUser.firstname}`,
+        description: '',
+        direct: true,
+        members: participants
+      };
+      const res = await ChannelService.addNewChannel(newChannel);
+      const channelId = res.data.data.id;
+      props.refetchUsers();
+      dispatch({type: StoreActions.SET_CURRENT_CHANNEL_ID, payload: channelId})
+      history.push(`/channel/${channelId}`);
+    }
+  }
 
   return (
     <div className="sidebar">
@@ -43,7 +89,7 @@ const Sidebar = () => {
           <h2>TalkChat</h2>
           <h3>
             <FiberManualRecordIcon />
-            {'Name'}
+            {userInfo.username}
           </h3>
         </div>
         {/* <CreateIcon /> */}
@@ -66,32 +112,32 @@ const Sidebar = () => {
       {/* {channels.map((channel) => (
         <SidebarOption title={channel.name} id={channel.id} />
       ))}  */}
-      <List
-      className="sidebar-list"
-      sx={{ width: '100%', maxWidth: 360 }}
-      component="nav"
-      aria-labelledby="nested-list-subheader"
-    >
-      <ListItemButton onClick={handleClick}>
-        <ListItemIcon>
-          <InboxIcon />
-        </ListItemIcon>
-        <ListItemText primary="Inbox" />
-        {open ? <ExpandLess /> : <ExpandMore />}
-      </ListItemButton>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-          <ListItemButton sx={{ pl: 4 }} selected>
+      <div className="list-container">
+        <List
+          sx={{ width: '100%', maxWidth: 360 }}
+          component="nav"
+          aria-labelledby="nested-list-subheader"
+        >
+          <ListItemButton onClick={handleClickOpenUsers}>
             <ListItemIcon>
-              <StarBorder />
+              <PeopleAltIcon />
             </ListItemIcon>
-            <ListItemText primary="Starred" />
+            <ListItemText primary="Direct Messages" />
+            {openUsers ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
+          <Collapse in={openUsers} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              {users.map((u: any, index: number) => (
+                <ListItemButton sx={{ pl: 4 }} key={u.id} selected={state.currentChannelId === u.channelId} onClick={() => handleClickUser(index)}>
+                  <ListItemText primary={`${u.lastname} ${u.firstname}`} />
+                </ListItemButton>
+              ))}
+            </List>
+          </Collapse>
         </List>
-      </Collapse>
-      </List>
+      </div>
     </div>
   );
-}
+};
 
 export default Sidebar;

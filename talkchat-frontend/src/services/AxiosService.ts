@@ -1,10 +1,11 @@
 import axios from 'axios';
+import { LOCAL_STORAGE_KEY } from '../constants/LocalStorageKey';
 
 
 export class AxiosService {
   private apiURL = process.env.REACT_APP_API_URL;
   private getToken() {
-    return localStorage.getItem('token') ?? '';
+    return localStorage.getItem(LOCAL_STORAGE_KEY.TOKEN_KEY) ?? '';
   }
 
   private axios = () => {
@@ -31,6 +32,24 @@ export class AxiosService {
         return Promise.reject(error);
       },
     );
+
+    // Add a response interceptor
+		axioshttp.interceptors.response.use(
+			(response) => {
+				// If forbidden return login
+        if (response.status === 401) {
+          localStorage.clear();
+          window.location.replace('/login');
+          return
+        }
+				return response;
+			},
+			(error) => {
+				
+				// Do something with response error
+				return Promise.reject(error);
+			}
+		);
 
     return axioshttp;
   };

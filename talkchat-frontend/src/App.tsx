@@ -16,12 +16,28 @@ import {
 import Home from './views/home/Home';
 import Sidebar from './components/layout/Sidebar/SideBar';
 import Header from './components/layout/Header/Header';
+import Chat from './views/chat/Chat';
+import { LOCAL_STORAGE_KEY } from './constants/LocalStorageKey';
+import { useEffect, useState } from 'react';
+import { UserService } from './services/UserService';
+import Store from './store/store';
 
 function App() {
   const theme = createTheme();
-  const token = localStorage.getItem('token');
-  console.log('🚀 ~ file: App.tsx ~ line 22 ~ App ~ token', token);
+  const token = localStorage.getItem(LOCAL_STORAGE_KEY.TOKEN_KEY);
+  const [users, setUsers] = useState<any>([]);
+  useEffect(()=> {
+    if (token) {
+      getAllUsers()
+    }
+  }, [])
+
+  const getAllUsers = async () => {
+    const allUsers = await UserService.getAllUsers();
+    setUsers(allUsers.data.data);
+  }
   return (
+    <Store>
     <ThemeProvider theme={theme}>
       <div className="App">
         <Router>
@@ -29,12 +45,16 @@ function App() {
             <>
             <Header />
             <div className="app-body">
-              <Sidebar />
+              <Sidebar allUsers={users} refetchUsers={getAllUsers} >
+              </Sidebar>
               <Switch>
                 <Redirect exact from="/" to={'/login'} />
                 <Route component={Login} exact path="/login" />
                 <Route component={SignUp} exact path="/signup" />
                 <Route component={Home} exact path="/home" />
+                <Route path="/channel/:channelId">
+                  <Chat />
+                </Route>
               </Switch>
             </div>
             </>
@@ -54,6 +74,7 @@ function App() {
         lightBackground
       />
     </ThemeProvider>
+    </Store>
   );
 }
 

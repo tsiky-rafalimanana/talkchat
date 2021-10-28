@@ -4,11 +4,12 @@ import SearchIcon from "@mui/icons-material/Search";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { Avatar, Button } from "@mui/material";
 import { useHistory } from 'react-router-dom';
+import { LOCAL_STORAGE_KEY } from "../../../constants/LocalStorageKey";
 
 function Header() {
   let history = useHistory();
   const handleClickLogOut = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem(LOCAL_STORAGE_KEY.TOKEN_KEY);
     history.push('/login');
     window.location.reload();
   }

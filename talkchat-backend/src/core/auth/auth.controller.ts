@@ -42,13 +42,11 @@ export class AuthController {
     }
     try {
       const loggedUser = await this.authService.login(data);
-      console.log("🚀 ~ file: auth.controller.ts ~ line 45 ~ AuthController ~ login ~ loggedUser", loggedUser)
       return {
         success: true,
         data: loggedUser,
       };
     } catch (error) {
-      console.log("🚀 ~ file: auth.controller.ts ~ line 51 ~ AuthController ~ login ~ error", error)
       return {
         success: false,
         message: error.message,

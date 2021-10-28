@@ -5,41 +5,40 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { Channel } from '../../channel/entity/channel.entity';
 import { Message } from '../../message/entity/message.entity';
+import { User } from '../../user/entity/user.entity';
 
 @Entity()
-@Unique(['email'])
-export class User extends BaseEntity {
+export class Channel extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  firstname: string;
-
-  @Column({ type: 'varchar', length: 255 })
-  lastname: string;
   
   @Column({ type: 'varchar', length: 255 })
-  nickname: string;
+  name: string;
   
-  @Column({ nullable: true, unique: true })
-  @IsEmail({}, { message: 'Email incorrect' })
-  email: string;
+  @Column({ type: 'varchar', length: 255 })
+  description: string;
+  
+  @Column({ type: 'varchar', length: 255 })
+  owner: string;
+  
+  @Column({ type: 'boolean', default: false})
+  archived: boolean;
 
-  @Column()
-  password: string;
-
-  @Column({ type: 'text', nullable: true })
-  photo_url: string;
-
-
+  @Column({ type: 'boolean', default: false})
+  private: boolean;
+  
+  @Column({ type: 'boolean', default: false})
+  direct: boolean;
+  
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
@@ -49,9 +48,14 @@ export class User extends BaseEntity {
   @Column({ type: 'timestamp', nullable: true })
   deleted_at: Date;
 
-  @OneToMany(() => Message, (message) => message.owner)
+  @OneToMany(() => Message, (message) => message.channel, {eager: true})
   messages: Message[];
 
-  @ManyToMany(() => Channel, (channel) => channel.members)
-  channels: Channel[];
+  @ManyToMany(() => User, (user) => user.channels, {
+    cascade: true,
+    eager: true,
+  })
+  @JoinTable()
+  members: User[];
+
 }

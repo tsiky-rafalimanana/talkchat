@@ -66,6 +66,11 @@
   border: 1px solid #49274b
 }
 
+.list-container {
+  overflow-y: auto;
+  height: 77vh;
+}
+
 @media only screen and (max-width: 550px) {
  
 

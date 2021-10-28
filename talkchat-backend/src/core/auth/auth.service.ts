@@ -36,6 +36,7 @@ export class AuthService {
         const token = this.getAccessToken(user);
         return {
           id: user.id,
+          username: `${user.lastname} ${user.firstname}`,
           token: token,
         };
       } else {

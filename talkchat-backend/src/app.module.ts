@@ -6,6 +6,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './core/auth/auth.module';
 import { MessageModule } from './core/message/message.module';
+import { UserModule } from './core/user/user.module';
+import { ChannelModule } from './core/channel/channel.module';
 
 @Module({
   imports: [
@@ -14,7 +16,9 @@ import { MessageModule } from './core/message/message.module';
     }),
     TypeOrmModule.forRoot(ormConfig()),
     AuthModule,
-    MessageModule
+    MessageModule,
+    UserModule,
+    ChannelModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -14,12 +14,13 @@ import ToastsStore from '../../helpers/ToastStoreHelper';
 import { AuthService } from '../../services/AuthService';
 import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
+import { LOCAL_STORAGE_KEY } from '../../constants/LocalStorageKey';
 
 
 export default function Login() {
   let history = useHistory();
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(LOCAL_STORAGE_KEY.TOKEN_KEY);
     if (token) {
       history.push('/home');
     }
@@ -41,7 +42,8 @@ export default function Login() {
     if (response.data.success) {
       ToastsStore.success('Login successful.');
       //set token
-      localStorage.setItem('token', response.data.data.token);
+      localStorage.setItem(LOCAL_STORAGE_KEY.TOKEN_KEY, response.data.data.token);
+      localStorage.setItem(LOCAL_STORAGE_KEY.USER_INFO_KEY, JSON.stringify(response.data.data));
       history.push('/home');
       window.location.reload();
     } else {
