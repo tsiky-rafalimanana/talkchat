@@ -18,18 +18,16 @@ function Chat() {
   const [state, dispatch] = useContext<any>(Context);
   const messagesEndRef = useRef(null)
   
+
+  
   useEffect(() => {
+    dispatch({type: StoreActions.SET_CURRENT_CHANNEL_ID, payload: channelId})
+    getChannel(channelId);
     SocketIOService.listenNewMsg((data: any) => {
       if (data.channelId === channelId) {
         getChannel(channelId);
       }
     })
-  }, [])
-  
-  useEffect(() => {
-    dispatch({type: StoreActions.SET_CURRENT_CHANNEL_ID, payload: channelId})
-    getChannel(channelId);
-    
   }, [channelId]);
 
   const getChannel = async (idChannel: string) => {
@@ -83,7 +81,7 @@ function Chat() {
         <div ref={messagesEndRef} />
       </div>
       {/* <ChatInput channelName={roomDetails?.name} channelId={roomId} /> */}
-      <ChatInput onNewMessage={handleNewMsg} channelName={''} />
+      <ChatInput onNewMessage={handleNewMsg} channelName={channelDetails.name} />
     </div>
   );
 }

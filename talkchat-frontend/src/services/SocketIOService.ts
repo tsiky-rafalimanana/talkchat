@@ -16,6 +16,16 @@ class SocketIOService {
       onComplete(data);
     });
   }
+
+  static emitNewChannel(data: any) {
+    socket.emit('new-channel', data);
+  }
+
+  static listenNewChannel(onComplete: any) {
+    socket.on('new-channel-received', (data: any) => {
+      onComplete(data);
+    });
+  }
   
 }
 

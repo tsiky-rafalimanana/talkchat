@@ -21,20 +21,28 @@ import { LOCAL_STORAGE_KEY } from './constants/LocalStorageKey';
 import { useEffect, useState } from 'react';
 import { UserService } from './services/UserService';
 import Store from './store/store';
+import { ChannelService } from './services/ChannelService';
+import { getUserInfo } from './utils/LocalStorageUtils';
 
 function App() {
   const theme = createTheme();
   const token = localStorage.getItem(LOCAL_STORAGE_KEY.TOKEN_KEY);
   const [users, setUsers] = useState<any>([]);
+  const [channels, setChannels] = useState<any>([]);
   useEffect(()=> {
     if (token) {
-      getAllUsers()
+      getAllUsers();
+      getAllChannels();
     }
   }, [])
 
   const getAllUsers = async () => {
     const allUsers = await UserService.getAllUsers();
     setUsers(allUsers.data.data);
+  }
+  const getAllChannels = async () => {
+    const allChannels = await ChannelService.getUserChannel();
+    setChannels(allChannels.data.data);
   }
   return (
     <Store>
@@ -45,7 +53,7 @@ function App() {
             <>
             <Header />
             <div className="app-body">
-              <Sidebar allUsers={users} refetchUsers={getAllUsers} >
+              <Sidebar allUsers={users} refetchUsers={getAllUsers} refetchChannels={getAllChannels} allChannels={channels}>
               </Sidebar>
               <Switch>
                 <Redirect exact from="/" to={'/login'} />

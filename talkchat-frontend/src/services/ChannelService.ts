@@ -8,5 +8,8 @@ export class ChannelService {
   static async getChannel(channelId: string): Promise<any> {
     return AxiosService.get({url: 'channel/' + channelId});
   }
-
+  static async getUserChannel(): Promise<any> {
+    return AxiosService.get({url: 'channel/user-channel'});
+  }
+  
 }

@@ -25,6 +25,21 @@ export class ChannelController {
       };
     }
   }
+  @Get('/user-channel')
+  async getUserChannel( @CurrentUser() me) {
+    try {
+      const result = await this.channelService.getUserChannel(me.id);
+      return {
+        success: true,
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error,
+      };
+    }
+  }
   @Get('/:id')
   async getChannel(@Param('id') channelId: string, @CurrentUser() me) {
     try {

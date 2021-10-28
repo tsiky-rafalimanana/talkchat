@@ -5,6 +5,8 @@
   padding: 10px 0;
   background-color: black;
   color: white;
+  height: 10vh;
+  align-items: center;
 }
 
 .header-left{

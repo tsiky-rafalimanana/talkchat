@@ -1,7 +1,7 @@
 export class ChannelAddDTO {
   name: string;
   description?: string;
-  archived?: boolean;
+  public?: boolean;
   direct?: boolean;
   private?: boolean;
   members: { id: string } []

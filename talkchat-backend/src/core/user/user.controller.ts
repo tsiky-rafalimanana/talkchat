@@ -19,7 +19,6 @@ export class UserController {
         data: users,
       };
     } catch (error) {
-      console.log("🚀 ~ file: user.controller.ts ~ line 22 ~ UserController ~ getAllUsers ~ error", error)
       return {
         success: false,
         message: error,

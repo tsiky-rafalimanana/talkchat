@@ -23,4 +23,30 @@ export class ChannelService {
     );
     return channel;
   }
+  async getUserChannel(userId: string) {
+    const privateChannels = await Channel.createQueryBuilder('channel')
+    .innerJoin('channel.members', 'user')
+    .leftJoinAndSelect('channel.messages', 'message')
+    .where('channel.private = 1')
+    .andWhere('user.id = :userId', {
+      userId
+    })
+    .getMany();
+
+    const publicChannels = await Channel.createQueryBuilder('channel')
+    .leftJoinAndSelect('channel.messages', 'message')
+    .where('channel.public = 1')
+    .getMany();
+
+    const channels = [...privateChannels, ...publicChannels];
+    
+    for(const channel of channels) {
+      
+      channel.messages.sort(
+        (a: any, b: any) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+      );
+    }
+    return channels;
+  }
 }

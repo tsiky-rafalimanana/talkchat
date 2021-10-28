@@ -31,7 +31,7 @@ export class Channel extends BaseEntity {
   owner: string;
   
   @Column({ type: 'boolean', default: false})
-  archived: boolean;
+  public: boolean;
 
   @Column({ type: 'boolean', default: false})
   private: boolean;
